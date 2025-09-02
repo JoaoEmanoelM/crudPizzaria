@@ -64,9 +64,8 @@ class PedidoDAO {
                 $pedido->getEndereco(),
                 $pedido->getTelefoneCliente(),
                 $pedido->getMetodoPagamento(),
-                $pedido->getAtendente()->getId(),
-                $pedido->getEntregador()->getId(),
-                $pedido->getSabor()->getId()
+                $pedido->getId_Atendente(),
+                $pedido->getId_Entregador()
             ]);
             return NULL;
         } catch(PDOException $e) {
@@ -96,11 +95,6 @@ class PedidoDAO {
             $entregador->setId($r["id_entregador"]);
             $entregador->setNome($r["nome_entregador"]);
             $pedido->setEntregador($entregador);
-
-            $sabor = new Sabor();
-            $sabor->setId($r["id_sabor"]);
-            $sabor->setNome($r["nome_sabor"]);
-            $pedido->setSabor($sabor);
 
             array_push($pedidos, $pedido);
         }

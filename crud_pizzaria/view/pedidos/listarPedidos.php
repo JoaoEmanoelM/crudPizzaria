@@ -41,8 +41,8 @@
             <td><?= $pedido->getEndereco() ?></td>
             <td><?= $pedido->getTelefoneCliente() ?></td>
             <td><?= $pedido->getMetodoPagamento() ?></td>
-            <td><?= $pedido->getAtendente() ?></td>
-            <td><?= $pedido->getEntregador() ?></td>
+            <td><?= $pedido->getAtendente()->getNome() ?></td>
+            <td><?= $pedido->getEntregador()->getNome() ?></td>
             <td>
                 <a href="alterar.php?id=<?= $aluno->getId() ?>">
                     <img src="../../img/btn_editar.png">

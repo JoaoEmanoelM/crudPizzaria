@@ -1,5 +1,5 @@
 <?php
-class Sabores {
+class Sabor {
 	private $id;
 	private $nome;
 

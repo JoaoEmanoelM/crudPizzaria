@@ -3,24 +3,41 @@ require_once(__DIR__ . '/../util/Connection.php');
 require_once(__DIR__ . '/../model/Atendente.php');
 
 class AtendenteDAO {
-    private $conn;
+    private PDO $conexao;
 
     public function __construct() {
-        $this->conn = Connection::getConnection();
+        $this->conexao = Connection::getConnection();
     }
 
     public function listar() {
-        $stmt = $this->conn->query("SELECT * FROM atendentes");
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $sql = "SELECT * FROM atendente ORDER BY nome";    
+        $stm = $this->conexao->prepare($sql);
+        $stm->execute();
+        $resultado = $stm->fetchAll(PDO::FETCH_ASSOC);
+
+        $atendentes= $this->map($resultado);
+        return $atendentes;
     }
 
-    public function salvar(Atendente $atendente) {
-        // TODO: implementar INSERT ou UPDATE
-    }
+    public function map($resultado){
 
-    public function excluir($id) {
-        $stmt = $this->conn->prepare("DELETE FROM atendentes WHERE id = ?");
-        $stmt->execute([$id]);
+        $atendentes = array();
+
+        foreach($resultado as $r){
+            $atendente = new Atendente();
+            $atendente->setId($r['id']);
+            $atendente->setNome($r['nome']);
+            $atendente->setEndereco($r['endereco']);
+            $atendente->setTelefone($r['telefone']);
+            $atendente->setSalarioBase($r['salarioBase']);
+            $atendente->setComissao($r['comissao']);
+            
+            
+            array_push($atendentes, $atendente);
+
+        }
+
+        return $atendentes;
     }
 }
 ?>

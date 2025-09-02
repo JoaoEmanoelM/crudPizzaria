@@ -1,23 +1,22 @@
 <?php
-require_once(__DIR__ . '/../service/EntregadorService.php');
+require_once(__DIR__ . '/../model/Entregador.php');
+require_once(__DIR__ . '/../dao/EntregadorDAO.php');
 
 class EntregadorController {
-    private $entregadorService;
+    private ?Entregador $entregador;
+    private ?EntregadorDAO $entregadorDAO;
 
-    public function __construct() {
-        $this->entregadorService = new EntregadorService();
+    public function __construct(){
+        $this->entregador = new Entregador();
+        $this->entregadorDAO = new EntregadorDAO();
     }
 
-    public function listar() {
-        return $this->entregadorService->listar();
+    public function listar(){
+
+        return $this->entregadorDAO->listar();
+
     }
 
-    public function salvar($entregador) {
-        return $this->entregadorService->salvar($entregador);
-    }
 
-    public function excluir($id) {
-        return $this->entregadorService->excluir($id);
-    }
 }
 ?>

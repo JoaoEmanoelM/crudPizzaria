@@ -69,3 +69,24 @@ insert into sabores (nome) values ("Chocolate Branco");
 ALTER TABLE pedidos ADD CONSTRAINT    FOREIGN KEY (id_atendente) REFERENCES atendente (id);
 ALTER TABLE pedidos ADD CONSTRAINT    FOREIGN KEY (id_entregador) REFERENCES entregador (id);
 ALTER TABLE pedidos ADD CONSTRAINT    FOREIGN KEY (id_sabor) REFERENCES sabores (id);
+
+function criaSelectSabor() {
+        // Pega a quantidade de sabores, garantindo número inteiro positivo
+        let qtdSabores = parseInt(document.querySelector('#qtdSabores').value, 10) || 1;
+        qtdSabores = Math.max(1, qtdSabores);
+
+        fetch("../../index.php?classe=Sabor&acao=criaSelectForm", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ "qtdSabores": qtdSabores })
+        })
+        .then(res => res.text())
+        .then(html => {
+            // Atualiza apenas o container específico
+            const container = document.querySelector("#campoSabores");
+            if (container) container.innerHTML = html;
+        })
+        .catch(erro => console.error("Erro ao criar campos:", erro));
+    }
+
+    </script>

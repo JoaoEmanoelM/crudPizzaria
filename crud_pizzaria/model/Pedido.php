@@ -9,9 +9,8 @@ class Pedido {
 	private ?string $endereco;
 	private ?string $telefoneCliente;
 	private ?string $metodoPagamento;
-	private ?int $id_atendente;
-	private ?int $id_entregador;
-	private ?int $id_sabor;
+	private ?Atendente $Atendente;
+	private ?Entregador $Entregador;
 
 	function getId(){
 		return $this->id;
@@ -61,17 +60,17 @@ class Pedido {
 	function setMetodoPagamento($metodoPagamento){
 		$this->metodoPagamento=$metodoPagamento;
 	}
-	function getId_atendente(){
-		return $this->id_atendente;
+	function getAtendente(){
+		return $this->Atendente;
 	}
-	function setId_atendente($id_atendente){
-		$this->id_atendente=$id_atendente;
+	function setAtendente($atendente){
+		$this->Atendente = $atendente;
 	}
-	function getId_entregador(){
-		return $this->id_entregador;
+	function getEntregador(){
+		return $this->Entregador;
 	}
-	function setId_entregador($id_entregador){
-		$this->id_entregador=$id_entregador;
+	function setEntregador($entregador){
+		$this->Entregador = $entregador;
 	}
 	function getId_sabor(){
 		return $this->id_sabor;
