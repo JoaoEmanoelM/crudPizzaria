@@ -11,17 +11,7 @@
     $atendentes = $atendenteCont->listar();
     $sabores = $saborCont->listar();
 
-    $acao = $_GET['a'];
-    switch ($acao) {
-    case 1:
-        $acao
-        break;
-    case 2:
-        // Code to be executed if expression matches value2
-        break;
-    default:
-        // Code to be executed if expression does not match any of the cases
-}
+
 ?>
     
     <form action="" method="post">

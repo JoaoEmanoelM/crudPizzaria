@@ -16,19 +16,19 @@ $sabores = $saborCont->listar();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pedido = new Pedido();
-    $pedido->setSabor1(filter_input(INPUT_POST, 'sabor1', FILTER_VALIDATE_INT) ?: null);
-    $pedido->setSabor2(filter_input(INPUT_POST, 'sabor2', FILTER_VALIDATE_INT) ?: null);
-    $pedido->setSabor3(filter_input(INPUT_POST, 'sabor3', FILTER_VALIDATE_INT) ?: null);
-    $tamanho = filter_input(INPUT_POST, 'tamanho', FILTER_SANITIZE_SPECIAL_CHARS);
-    $endereco = filter_input(INPUT_POST, 'endereco', FILTER_SANITIZE_SPECIAL_CHARS);
-    $telefoneCliente = filter_input(INPUT_POST, 'telefoneCliente', FILTER_SANITIZE_SPECIAL_CHARS);
-    $metodoPagamento = filter_input(INPUT_POST, 'metodoPagamento', FILTER_SANITIZE_SPECIAL_CHARS);
-    $pedido->setTamanho($tamanho ? trim($tamanho) : null);
-    $pedido->setEndereco($endereco ? trim($endereco) : null);
-    $pedido->setTelefoneCliente($telefoneCliente ? trim($telefoneCliente) : null);
-    $pedido->setMetodoPagamento($metodoPagamento ? trim($metodoPagamento) : null);
-    $pedido->setId_Atendente(filter_input(INPUT_POST, 'atendente', FILTER_VALIDATE_INT) ?: null);
-    $pedido->setId_Entregador(filter_input(INPUT_POST, 'entregador', FILTER_VALIDATE_INT) ?: null);
+    $pedido->setSabor1(isset($_POST['sabor1']) && is_numeric($_POST['sabor1']) ? (int)$_POST['sabor1'] : null);
+    $pedido->setSabor2(isset($_POST['sabor2']) && is_numeric($_POST['sabor2']) ? (int)$_POST['sabor2'] : null);
+    $pedido->setSabor3(isset($_POST['sabor3']) && is_numeric($_POST['sabor3']) ? (int)$_POST['sabor3'] : null);
+    $tamanho = isset($_POST['tamanho']) ? htmlspecialchars(trim($_POST['tamanho'])) : null;
+    $endereco = isset($_POST['endereco']) ? htmlspecialchars(trim($_POST['endereco'])) : null;
+    $telefoneCliente = isset($_POST['telefoneCliente']) ? htmlspecialchars(trim($_POST['telefoneCliente'])) : null;
+    $metodoPagamento = isset($_POST['metodoPagamento']) ? htmlspecialchars(trim($_POST['metodoPagamento'])) : null;
+    $pedido->setTamanho($tamanho);
+    $pedido->setEndereco($endereco);
+    $pedido->setTelefoneCliente($telefoneCliente);
+    $pedido->setMetodoPagamento($metodoPagamento);
+    $pedido->setId_Atendente(isset($_POST['atendente']) && is_numeric($_POST['atendente']) ? (int)$_POST['atendente'] : null);
+    $pedido->setId_Entregador(isset($_POST['entregador']) && is_numeric($_POST['entregador']) ? (int)$_POST['entregador'] : null);
 
     $erros = [];
     if (!$pedido->getSabor1()) {

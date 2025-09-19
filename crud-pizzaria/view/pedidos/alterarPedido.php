@@ -27,19 +27,19 @@ if ($pedido->getSabor3()) $qtdSabores = 3;
 elseif ($pedido->getSabor2()) $qtdSabores = 2;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $pedido->setSabor1(filter_input(INPUT_POST, 'sabor1', FILTER_VALIDATE_INT) ?: null);
-    $pedido->setSabor2(filter_input(INPUT_POST, 'sabor2', FILTER_VALIDATE_INT) ?: null);
-    $pedido->setSabor3(filter_input(INPUT_POST, 'sabor3', FILTER_VALIDATE_INT) ?: null);
-    $tamanho = filter_input(INPUT_POST, 'tamanho', FILTER_SANITIZE_SPECIAL_CHARS);
-    $endereco = filter_input(INPUT_POST, 'endereco', FILTER_SANITIZE_SPECIAL_CHARS);
-    $telefoneCliente = filter_input(INPUT_POST, 'telefoneCliente', FILTER_SANITIZE_SPECIAL_CHARS);
-    $metodoPagamento = filter_input(INPUT_POST, 'metodoPagamento', FILTER_SANITIZE_SPECIAL_CHARS);
-    $pedido->setTamanho($tamanho ? trim($tamanho) : null);
-    $pedido->setEndereco($endereco ? trim($endereco) : null);
-    $pedido->setTelefoneCliente($telefoneCliente ? trim($telefoneCliente) : null);
-    $pedido->setMetodoPagamento($metodoPagamento ? trim($metodoPagamento) : null);
-    $pedido->setId_Atendente(filter_input(INPUT_POST, 'atendente', FILTER_VALIDATE_INT) ?: null);
-    $pedido->setId_Entregador(filter_input(INPUT_POST, 'entregador', FILTER_VALIDATE_INT) ?: null);
+    $pedido->setSabor1(isset($_POST['sabor1']) && is_numeric($_POST['sabor1']) ? (int)$_POST['sabor1'] : null);
+    $pedido->setSabor2(isset($_POST['sabor2']) && is_numeric($_POST['sabor2']) ? (int)$_POST['sabor2'] : null);
+    $pedido->setSabor3(isset($_POST['sabor3']) && is_numeric($_POST['sabor3']) ? (int)$_POST['sabor3'] : null);
+    $tamanho = isset($_POST['tamanho']) ? htmlspecialchars(trim($_POST['tamanho'])) : null;
+    $endereco = isset($_POST['endereco']) ? htmlspecialchars(trim($_POST['endereco'])) : null;
+    $telefoneCliente = isset($_POST['telefoneCliente']) ? htmlspecialchars(trim($_POST['telefoneCliente'])) : null;
+    $metodoPagamento = isset($_POST['metodoPagamento']) ? htmlspecialchars(trim($_POST['metodoPagamento'])) : null;
+    $pedido->setTamanho($tamanho);
+    $pedido->setEndereco($endereco);
+    $pedido->setTelefoneCliente($telefoneCliente);
+    $pedido->setMetodoPagamento($metodoPagamento);
+    $pedido->setId_Atendente(isset($_POST['atendente']) && is_numeric($_POST['atendente']) ? (int)$_POST['atendente'] : null);
+    $pedido->setId_Entregador(isset($_POST['entregador']) && is_numeric($_POST['entregador']) ? (int)$_POST['entregador'] : null);
 
     $erros = [];
     if (!$pedido->getSabor1()) {
@@ -117,25 +117,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </select>
 
             <label for="endereco">Endereço para Entrega:</label>
-            <input type="text" name="endereco" id="endereco" value="<?= htmlspecialchars($pedido->getEndereco()) ?>" placeholder="Número e rua">
+            <input type="text" name="endereco" id="endereco" value="<?= $pedido->getEndereco() ? $pedido->getEndereco() : "" ?>" placeholder="Número e rua">
 
             <label for="telefoneCliente">Telefone para Contato:</label>
-            <input type="text" name="telefoneCliente" id="telefoneCliente" value="<?= htmlspecialchars($pedido->getTelefoneCliente()) ?>" placeholder="(XX) 9XXXX-XXXX">
+            <input type="text" name="telefoneCliente" id="telefoneCliente" value="<?= $pedido->getTelefoneCliente() ? $pedido->getTelefoneCliente() : "" ?>" placeholder="(XX) 9XXXX-XXXX">
 
             <label for="metodoPagamento">Método de Pagamento:</label>
             <select name="metodoPagamento" id="metodoPagamento">
                 <option value="">Selecione o método de pagamento</option>
-                <option value="D" <?= $pedido->getMetodoPagamento() == 'D' ? 'selected' : '' ?>>Débito</option>
-                <option value="C" <?= $pedido->getMetodoPagamento() == 'C' ? 'selected' : '' ?>>Crédito</option>
-                <option value="M" <?= $pedido->getMetodoPagamento() == 'M' ? 'selected' : '' ?>>Dinheiro</option>
-                <option value="P" <?= $pedido->getMetodoPagamento() == 'P' ? 'selected' : '' ?>>Pix</option>
+                <option value="D" <?= $pedido->getMetodoPagamento() && $pedido->getMetodoPagamento() == 'D' ? 'selected' : '' ?>>Débito</option>
+                <option value="C" <?= $pedido->getMetodoPagamento() && $pedido->getMetodoPagamento() == 'C' ? 'selected' : '' ?>>Crédito</option>
+                <option value="M" <?= $pedido->getMetodoPagamento() && $pedido->getMetodoPagamento() == 'M' ? 'selected' : '' ?>>Dinheiro</option>
+                <option value="P" <?= $pedido->getMetodoPagamento() && $pedido->getMetodoPagamento() == 'P' ? 'selected' : '' ?>>Pix</option>
             </select>
 
             <label for="atendente">Atendente:</label>
             <select name="atendente" id="atendente">
                 <option value="">Selecione o atendente</option>
                 <?php foreach ($atendentes as $a): ?>
-                    <option value="<?= $a->getId() ?>" <?= $pedido->getId_Atendente() == $a->getId() ? 'selected' : '' ?>><?= htmlspecialchars($a->getNome()) ?></option>
+                    <option value="<?= $a->getId() ?>" <?= $pedido->getId_Atendente() && $pedido->getId_Atendente() == $a->getId() ? 'selected' : '' ?>><?= $a->getNome() ?></option>
                 <?php endforeach; ?>
             </select>
 
@@ -143,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <select name="entregador" id="entregador">
                 <option value="">Selecione o entregador</option>
                 <?php foreach ($entregadores as $e): ?>
-                    <option value="<?= $e->getId() ?>" <?= $pedido->getId_Entregador() == $e->getId() ? 'selected' : '' ?>><?= htmlspecialchars($e->getNome()) ?></option>
+                    <option value="<?= $e->getId() ?>" <?= $pedido->getId_Entregador() && $pedido->getId_Entregador() == $e->getId() ? 'selected' : '' ?>><?= $e->getNome() ?></option>
                 <?php endforeach; ?>
             </select>
 
