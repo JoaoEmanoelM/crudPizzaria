@@ -1,5 +1,6 @@
 <?php
 require_once(__DIR__ . "/../../controller/PedidoController.php");
+require_once(__DIR__ . "/../../service/PedidoService.php");
 require_once(__DIR__ . "/../../controller/SaborController.php");
 require_once(__DIR__ . "/../../controller/AtendenteController.php");
 require_once(__DIR__ . "/../../controller/EntregadorController.php");
@@ -9,18 +10,14 @@ $saborCont = new SaborController();
 $entregadorCont = new EntregadorController();
 $atendenteCont = new AtendenteController();
 $pedidoCont = new PedidoController();
+$pedidoService = new PedidoService();
 
 $entregadores = $entregadorCont->listar();
 $atendentes = $atendenteCont->listar();
 $sabores = $saborCont->listar();
 
 $id = isset($_GET['id']) ? $_GET['id'] : null;
-$pedido = $pedidoCont->buscarPorId($id);
-
-if (!$pedido) {
-    echo "<p class='error'>Pedido não encontrado!</p>";
-    exit();
-}
+$pedido = $id ? $pedidoCont->buscarPorId($id) : header("location: listarPedidos.php");;
 
 $qtdSabores = 1;
 if ($pedido->getSabor3()) $qtdSabores = 3;
@@ -41,28 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pedido->setId_Atendente(isset($_POST['atendente']) && is_numeric($_POST['atendente']) ? (int)$_POST['atendente'] : null);
     $pedido->setId_Entregador(isset($_POST['entregador']) && is_numeric($_POST['entregador']) ? (int)$_POST['entregador'] : null);
 
-    $erros = [];
-    if (!$pedido->getSabor1()) {
-        $erros[] = "Selecione pelo menos um sabor!";
-    }
-    if (!in_array($pedido->getTamanho(), ['M', 'G', 'X', 'F'], true)) {
-        $erros[] = "Tamanho inválido!";
-    }
-    if (empty($pedido->getEndereco())) {
-        $erros[] = "Endereço é obrigatório!";
-    }
-    if (!preg_match('/^\(\d{2}\) 9\d{4}-\d{4}$/', $pedido->getTelefoneCliente())) {
-        $erros[] = "Telefone inválido! Use o formato (XX) 9XXXX-XXXX";
-    }
-    if (!in_array($pedido->getMetodoPagamento(), ['D', 'C', 'M', 'P'], true)) {
-        $erros[] = "Método de pagamento inválido!";
-    }
-    if (!$pedido->getId_Atendente()) {
-        $erros[] = "Selecione um atendente!";
-    }
-    if (!$pedido->getId_Entregador()) {
-        $erros[] = "Selecione um entregador!";
-    }
+    $erros = $pedidoService->validarPedido($pedido);
+    
 
     if (empty($erros)) {
         $erros = $pedidoCont->alterar($pedido);
@@ -75,132 +52,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($erros)) {
         echo "<div class='error'>";
         foreach ($erros as $erro) {
-            echo "<p>" . htmlspecialchars($erro) . "</p>";
+            echo "<p>" . $erro . "</p>";
         }
         echo "</div>";
     }
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alterar Pedido - Pizzaria Vovô Alberto</title>
-    <link rel="stylesheet" href="../../css/styles.css">
-</head>
-<body>
-    <main>
-        <h3>Alterar Pedido #<?= htmlspecialchars($pedido->getId()) ?></h3>
+    <?php include_once(__DIR__ . "/../include/header.php")?>
+        
+    <?php include_once("./form.php")?>
 
-        <form action="" method="post">
-            <label for="qtdSabores">Quantidade de Sabores:</label>
-            <select name="qtdSabores" id="qtdSabores" onchange="criaSelectSabor()">
-                <option value="">Selecione a quantidade de sabores</option>
-                <option value="1" <?= $qtdSabores == 1 ? 'selected' : '' ?>>1</option>
-                <option value="2" <?= $qtdSabores == 2 ? 'selected' : '' ?>>2</option>
-                <option value="3" <?= $qtdSabores == 3 ? 'selected' : '' ?>>3</option>
-            </select>
-
-            <div id="campoSabores">
-                <!-- Pre-filled flavors will be loaded via JS -->
-            </div>
-
-            <label for="tamanho">Tamanho da Pizza:</label>
-            <select name="tamanho" id="tamanho">
-                <option value="">Selecione o tamanho da pizza</option>
-                <option value="M" <?= $pedido->getTamanho() == 'M' ? 'selected' : '' ?>>Média</option>
-                <option value="G" <?= $pedido->getTamanho() == 'G' ? 'selected' : '' ?>>Grande</option>
-                <option value="X" <?= $pedido->getTamanho() == 'X' ? 'selected' : '' ?>>Gigante</option>
-                <option value="F" <?= $pedido->getTamanho() == 'F' ? 'selected' : '' ?>>Família</option>
-            </select>
-
-            <label for="endereco">Endereço para Entrega:</label>
-            <input type="text" name="endereco" id="endereco" value="<?= $pedido->getEndereco() ? $pedido->getEndereco() : "" ?>" placeholder="Número e rua">
-
-            <label for="telefoneCliente">Telefone para Contato:</label>
-            <input type="text" name="telefoneCliente" id="telefoneCliente" value="<?= $pedido->getTelefoneCliente() ? $pedido->getTelefoneCliente() : "" ?>" placeholder="(XX) 9XXXX-XXXX">
-
-            <label for="metodoPagamento">Método de Pagamento:</label>
-            <select name="metodoPagamento" id="metodoPagamento">
-                <option value="">Selecione o método de pagamento</option>
-                <option value="D" <?= $pedido->getMetodoPagamento() && $pedido->getMetodoPagamento() == 'D' ? 'selected' : '' ?>>Débito</option>
-                <option value="C" <?= $pedido->getMetodoPagamento() && $pedido->getMetodoPagamento() == 'C' ? 'selected' : '' ?>>Crédito</option>
-                <option value="M" <?= $pedido->getMetodoPagamento() && $pedido->getMetodoPagamento() == 'M' ? 'selected' : '' ?>>Dinheiro</option>
-                <option value="P" <?= $pedido->getMetodoPagamento() && $pedido->getMetodoPagamento() == 'P' ? 'selected' : '' ?>>Pix</option>
-            </select>
-
-            <label for="atendente">Atendente:</label>
-            <select name="atendente" id="atendente">
-                <option value="">Selecione o atendente</option>
-                <?php foreach ($atendentes as $a): ?>
-                    <option value="<?= $a->getId() ?>" <?= $pedido->getId_Atendente() && $pedido->getId_Atendente() == $a->getId() ? 'selected' : '' ?>><?= $a->getNome() ?></option>
-                <?php endforeach; ?>
-            </select>
-
-            <label for="entregador">Entregador:</label>
-            <select name="entregador" id="entregador">
-                <option value="">Selecione o entregador</option>
-                <?php foreach ($entregadores as $e): ?>
-                    <option value="<?= $e->getId() ?>" <?= $pedido->getId_Entregador() && $pedido->getId_Entregador() == $e->getId() ? 'selected' : '' ?>><?= $e->getNome() ?></option>
-                <?php endforeach; ?>
-            </select>
-
-            <input type="submit" value="Atualizar Pedido">
-        </form>
-    </main>
-
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            criaSelectSabor(true);
-        });
-
-        function criaSelectSabor(prefill = false) {
-            const qtdSabores = parseInt(document.querySelector('#qtdSabores').value, 10) || 1;
-            const numSabores = Math.max(1, qtdSabores);
-
-            fetch("../../index.php?classe=Sabor&acao=criaSelectForm", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "text/html"
-                },
-                body: JSON.stringify({ qtdSabores: numSabores })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status} ${response.statusText}`);
-                }
-                return response.text();
-            })
-            .then(html => {
-                const container = document.querySelector("#campoSabores");
-                if (container) {
-                    container.innerHTML = html;
-                    if (prefill) {
-                        const existingSabors = [
-                            <?= $pedido->getSabor1() ? "'{$pedido->getSabor1()}'" : 'null' ?>,
-                            <?= $pedido->getSabor2() ? "'{$pedido->getSabor2()}'" : 'null' ?>,
-                            <?= $pedido->getSabor3() ? "'{$pedido->getSabor3()}'" : 'null' ?>
-                        ];
-                        for (let i = 1; i <= numSabores; i++) {
-                            const select = document.querySelector(`#sabor${i}`);
-                            if (select && existingSabors[i-1]) {
-                                select.value = existingSabors[i-1];
-                            }
-                        }
-                    }
-                } else {
-                    console.error("Container #campoSabores not found in the DOM");
-                }
-            })
-            .catch(error => {
-                console.error("Erro ao criar campos de sabores:", error);
-            });
-        }
-    </script>
-</body>
-</html>
-
-<?php include_once(__DIR__ . "/../include/footer.php"); ?>
+    <?php include_once(__DIR__ . "/../include/footer.php"); ?>

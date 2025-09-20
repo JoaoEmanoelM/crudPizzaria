@@ -8,19 +8,20 @@ require_once(__DIR__ . "/../include/header.php");
 
 $entregadorCont = new EntregadorController();
 
-$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+$id = isset($_GET['id']) ? (int) $_GET['id'] : null;
 $entregador = $id ? $entregadorCont->buscarPorId($id) : new Entregador();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $entregador->setNome(filter_input(INPUT_POST, 'nome', FILTER_SANITIZE_SPECIAL_CHARS));
-    $entregador->setEndereco(filter_input(INPUT_POST, 'endereco', FILTER_SANITIZE_SPECIAL_CHARS));
-    $entregador->setTelefone(filter_input(INPUT_POST, 'telefone', FILTER_SANITIZE_SPECIAL_CHARS));
-    $entregador->setSalarioBase(filter_input(INPUT_POST, 'salarioBase', FILTER_VALIDATE_FLOAT));
-    $entregador->setComissao(filter_input(INPUT_POST, 'comissao', FILTER_VALIDATE_FLOAT));
-    $entregador->setPlacaMoto(filter_input(INPUT_POST, 'placaMoto', FILTER_SANITIZE_SPECIAL_CHARS));
-    $entregador->setModeloMoto(filter_input(INPUT_POST, 'modeloMoto', FILTER_SANITIZE_SPECIAL_CHARS));
+    $entregador->setNome($_POST['nome'] ?? null);
+    $entregador->setEndereco($_POST['endereco'] ?? null);
+    $entregador->setTelefone($_POST['telefone'] ?? null);
+    $entregador->setSalarioBase(isset($_POST['salarioBase']) ? (float) $_POST['salarioBase'] : null);
+    $entregador->setComissao(isset($_POST['comissao']) ? (float) $_POST['comissao'] : null);
+    $entregador->setPlacaMoto($_POST['placaMoto'] ?? null);
+    $entregador->setModeloMoto($_POST['modeloMoto'] ?? null);
 
-    $erros = $entregadorCont->salvar($entregador);
+    $entregador->getId() ? $erros = $entregadorCont->alterar($entregador) : $erros = $entregadorCont->inserir($entregador);
+
     if (empty($erros)) {
         header("Location: listarEntregadores.php");
         exit();
@@ -36,44 +37,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $id ? 'Alterar' : 'Criar' ?> Entregador - Pizzaria Vovô Alberto</title>
-    <link rel="stylesheet" href="../../css/styles.css">
-</head>
-<body>
-    <main>
+<?php include_once(__DIR__ . "/../include/header.php");?>
+
         <h3><?= $id ? 'Alterar' : 'Criar Novo' ?> Entregador</h3>
 
         <form action="" method="post">
             <label for="nome">Nome:</label>
-            <input type="text" name="nome" id="nome" value="<?= htmlspecialchars($entregador->getNome() ?? '') ?>">
+            <input type="text" name="nome" id="nome" value="<?= $entregador->getNome() ?? '' ?>">
 
             <label for="endereco">Endereço:</label>
-            <input type="text" name="endereco" id="endereco" value="<?= htmlspecialchars($entregador->getEndereco() ?? '') ?>">
+            <input type="text" name="endereco" id="endereco" value="<?= $entregador->getEndereco() ?? '' ?>">
 
             <label for="telefone">Telefone:</label>
-            <input type="text" name="telefone" id="telefone" value="<?= htmlspecialchars($entregador->getTelefone() ?? '') ?>">
+            <input type="text" name="telefone" id="telefone" maxlength=15 onkeyup="handlePhone(event)" value="<?= $entregador->getTelefone() ?? '' ?>">
 
             <label for="salarioBase">Salário Base:</label>
-            <input type="number" name="salarioBase" id="salarioBase" step="0.01" value="<?= htmlspecialchars($entregador->getSalarioBase() ?? '') ?>">
+            <input type="number" name="salarioBase" id="salarioBase" value="<?= $entregador->getSalarioBase() ?? '' ?>">
 
             <label for="comissao">Comissão:</label>
-            <input type="number" name="comissao" id="comissao" step="0.01" value="<?= htmlspecialchars($entregador->getComissao() ?? '') ?>">
+            <input type="number" name="comissao" id="comissao" value="<?= $entregador->getComissao() ?? '' ?>">
 
             <label for="placaMoto">Placa da Moto:</label>
-            <input type="text" name="placaMoto" id="placaMoto" value="<?= htmlspecialchars($entregador->getPlacaMoto() ?? '') ?>">
+            <input type="text" name="placaMoto" id="placaMoto" value="<?= $entregador->getPlacaMoto() ?? '' ?>">
 
             <label for="modeloMoto">Modelo da Moto:</label>
-            <input type="text" name="modeloMoto" id="modeloMoto" value="<?= htmlspecialchars($entregador->getModeloMoto() ?? '') ?>">
+            <input type="text" name="modeloMoto" id="modeloMoto" value="<?= $entregador->getModeloMoto() ?? '' ?>">
 
             <input type="submit" value="Salvar">
         </form>
     </main>
 </body>
-</html>
+
+    <script>
+
+        const handlePhone = (event) => {
+        let input = event.target
+        input.value = phoneMask(input.value)
+        }
+
+        const phoneMask = (value) => {
+        if (!value) return ""
+        value = value.replace(/\D/g,'')
+        value = value.replace(/(\d{2})(\d)/,"($1) $2")
+        value = value.replace(/(\d)(\d{4})$/,"$1-$2")
+        return value
+        }
+
+    </script>
+
+
 
 <?php include_once(__DIR__ . "/../include/footer.php"); ?>

@@ -18,34 +18,42 @@ class EntregadorDAO {
         return $this->map($resultado);
     }
 
-    public function salvar(Entregador $entregador) {
+    public function inserir(Entregador $entregador) {
         try {
-            if ($entregador->getId()) {
-                $sql = "UPDATE entregador SET nome = ?, endereco = ?, telefone = ?, salarioBase = ?, comissao = ?, placaMoto = ?, modeloMoto = ? WHERE id = ?";
-                $stm = $this->conexao->prepare($sql);
-                $stm->execute([
-                    $entregador->getNome(),
-                    $entregador->getEndereco(),
-                    $entregador->getTelefone(),
-                    $entregador->getSalarioBase(),
-                    $entregador->getComissao(),
-                    $entregador->getPlacaMoto(),
-                    $entregador->getModeloMoto(),
-                    $entregador->getId()
-                ]);
-            } else {
-                $sql = "INSERT INTO entregador (nome, endereco, telefone, salarioBase, comissao, placaMoto, modeloMoto) VALUES (?, ?, ?, ?, ?, ?, ?)";
-                $stm = $this->conexao->prepare($sql);
-                $stm->execute([
-                    $entregador->getNome(),
-                    $entregador->getEndereco(),
-                    $entregador->getTelefone(),
-                    $entregador->getSalarioBase(),
-                    $entregador->getComissao(),
-                    $entregador->getPlacaMoto(),
-                    $entregador->getModeloMoto()
-                ]);
-            }
+            $sql = "INSERT INTO entregador (nome, endereco, telefone, salarioBase, comissao, placaMoto, modeloMoto) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)";
+            $stm = $this->conexao->prepare($sql);
+            $stm->execute([
+                $entregador->getNome(),
+                $entregador->getEndereco(),
+                $entregador->getTelefone(),
+                $entregador->getSalarioBase(),
+                $entregador->getComissao(),
+                $entregador->getPlacaMoto(),
+                $entregador->getModeloMoto()
+            ]);
+            return null;
+        } catch (PDOException $e) {
+            return $e;
+        }
+    }
+
+    public function alterar(Entregador $entregador) {
+        try {
+            $sql = "UPDATE entregador 
+                       SET nome = ?, endereco = ?, telefone = ?, salarioBase = ?, comissao = ?, placaMoto = ?, modeloMoto = ? 
+                     WHERE id = ?";
+            $stm = $this->conexao->prepare($sql);
+            $stm->execute([
+                $entregador->getNome(),
+                $entregador->getEndereco(),
+                $entregador->getTelefone(),
+                $entregador->getSalarioBase(),
+                $entregador->getComissao(),
+                $entregador->getPlacaMoto(),
+                $entregador->getModeloMoto(),
+                $entregador->getId()
+            ]);
             return null;
         } catch (PDOException $e) {
             return $e;

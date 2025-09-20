@@ -18,9 +18,27 @@ class AtendenteDAO {
         return $this->map($resultado);
     }
 
-    public function salvar(Atendente $atendente) {
+    public function inserir(Atendente $atendente) {
         try {
-            if ($atendente->getId()) {
+            
+                $sql = "INSERT INTO atendente (nome, endereco, telefone, salarioBase, comissao) VALUES (?, ?, ?, ?, ?)";
+                $stm = $this->conexao->prepare($sql);
+                $stm->execute([
+                    $atendente->getNome(),
+                    $atendente->getEndereco(),
+                    $atendente->getTelefone(),
+                    $atendente->getSalarioBase(),
+                    $atendente->getComissao()
+                ]);
+            
+            return null;
+        } catch (PDOException $e) {
+            return $e;
+        }
+    }
+
+    public function alterar(Atendente $atendente) {
+        try {
                 $sql = "UPDATE atendente SET nome = ?, endereco = ?, telefone = ?, salarioBase = ?, comissao = ? WHERE id = ?";
                 $stm = $this->conexao->prepare($sql);
                 $stm->execute([
@@ -31,17 +49,6 @@ class AtendenteDAO {
                     $atendente->getComissao(),
                     $atendente->getId()
                 ]);
-            } else {
-                $sql = "INSERT INTO atendente (nome, endereco, telefone, salarioBase, comissao) VALUES (?, ?, ?, ?, ?)";
-                $stm = $this->conexao->prepare($sql);
-                $stm->execute([
-                    $atendente->getNome(),
-                    $atendente->getEndereco(),
-                    $atendente->getTelefone(),
-                    $atendente->getSalarioBase(),
-                    $atendente->getComissao()
-                ]);
-            }
             return null;
         } catch (PDOException $e) {
             return $e;

@@ -12,10 +12,6 @@ class SaborService {
         return $this->saborDAO->listar();
     }
 
-    public function salvar($sabor) {
-        return $this->saborDAO->salvar($sabor);
-    }
-
     public function excluir($id) {
         return $this->saborDAO->excluir($id);
     }

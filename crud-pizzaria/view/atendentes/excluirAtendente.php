@@ -1,7 +1,7 @@
 <?php
 require_once(__DIR__ . "/../../controller/AtendenteController.php");
 
-$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+$id = $_GET['id'] ?? null;
 $atendenteCont = new AtendenteController();
 
 if ($id) {

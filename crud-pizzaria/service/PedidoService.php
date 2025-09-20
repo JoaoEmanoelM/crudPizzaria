@@ -7,28 +7,26 @@ class PedidoService {
     public function validarPedido(Pedido $pedido) {
         $erros = array();
 
-        if(! $pedido->getSabor1()) {
-            array_push($erros, "Informe ao menos 1 sabor!");
+        if (!$pedido->getSabor1()) {
+        $erros[] = "Selecione pelo menos um sabor!";
         }
-
-        if(! $pedido->getTamanho()) {
-            array_push($erros, "Informe o tamanho da pizza!");
+        if (!in_array($pedido->getTamanho(), ['M', 'G', 'X', 'F'], true)) {
+            $erros[] = "Tamanho inválido!";
         }
-
-        if(! $pedido->getEndereco()) {
-            array_push($erros, "Informe o endereço da entrega!");
+        if (empty($pedido->getEndereco())) {
+            $erros[] = "Endereço é obrigatório!";
         }
-
-        if(! $pedido->getTelefoneCliente()) {
-            array_push($erros, "Informe um telefone de contato!");
+        if (!preg_match('/^\(\d{2}\) 9\d{4}-\d{4}$/', $pedido->getTelefoneCliente())) {
+            $erros[] = "Telefone inválido! Use o formato (XX) 9XXXX-XXXX";
         }
-
-        if(! $pedido->getMetodoPagamento()) {
-            array_push($erros, "Informe o método de pagamento!");
+        if (!in_array($pedido->getMetodoPagamento(), ['D', 'C', 'M', 'P'], true)) {
+            $erros[] = "Método de pagamento inválido!";
         }
-        
-        if(! $pedido->getId_atendente()) {
-            array_push($erros, "Informe o atendente que realizou o pedido!");
+        if (!$pedido->getId_Atendente()) {
+            $erros[] = "Selecione um atendente!";
+        }
+        if (!$pedido->getId_Entregador()) {
+            $erros[] = "Selecione um entregador!";
         }
 
         return $erros;

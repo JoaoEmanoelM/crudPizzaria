@@ -1,4 +1,4 @@
-<?php
+    <?php
 class Atendente {
     private $id;
     private $nome;

@@ -7,16 +7,8 @@ $lista = $entregadorCont->listar();
 
 ?>
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listar Entregadores - Pizzaria Vovô Alberto</title>
-    <link rel="stylesheet" href="../../css/styles.css">
-</head>
-<body>
-    <main>
+<?php include_once(__DIR__ . "/../include/header.php");?>
+
         <h3>Entregadores</h3>
         <div>
             <a href="../../index.php"><img src="../../img/botao-de-inicio.png" alt="Inicio"></a>
@@ -60,6 +52,6 @@ $lista = $entregadorCont->listar();
         </div>
     </main>
 </body>
-</html>
+
 
 <?php include_once(__DIR__ . "/../include/footer.php"); ?>

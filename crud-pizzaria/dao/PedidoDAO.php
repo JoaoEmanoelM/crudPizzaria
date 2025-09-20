@@ -79,7 +79,7 @@ class PedidoDAO {
                     $stm = $this->conexao->prepare($sql);
                     $stm->execute([$pedidoId, $saborId]);
                 }
-            }
+            } 
 
             $this->conexao->commit();
             return null;

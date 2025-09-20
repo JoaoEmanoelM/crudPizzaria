@@ -10,16 +10,8 @@ if (empty($lista)) {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listar Pedidos - Pizzaria Vovô Alberto</title>
-    <link rel="stylesheet" href="../../css/styles.css">
-</head>
-<body>
-    <main>
+<?php include_once(__DIR__ . "/../include/header.php");?>
+
         <h3>Pedidos Anteriores</h3>
         <div>
             <a href="criarPedido.php"><img src="../../img/pedido.png" alt="Criar Pedido"></a> |
@@ -67,6 +59,6 @@ if (empty($lista)) {
         </div>
     </main>
 </body>
-</html>
+
 
 <?php include_once(__DIR__ . "/../include/footer.php"); ?>

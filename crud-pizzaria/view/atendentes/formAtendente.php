@@ -8,17 +8,18 @@ require_once(__DIR__ . "/../include/header.php");
 
 $atendenteCont = new AtendenteController();
 
-$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+$id = isset($_GET['id']) ? (int) $_GET['id'] : null;
 $atendente = $id ? $atendenteCont->buscarPorId($id) : new Atendente();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $atendente->setNome(filter_input(INPUT_POST, 'nome', FILTER_SANITIZE_SPECIAL_CHARS));
-    $atendente->setEndereco(filter_input(INPUT_POST, 'endereco', FILTER_SANITIZE_SPECIAL_CHARS));
-    $atendente->setTelefone(filter_input(INPUT_POST, 'telefone', FILTER_SANITIZE_SPECIAL_CHARS));
-    $atendente->setSalarioBase(filter_input(INPUT_POST, 'salarioBase', FILTER_VALIDATE_FLOAT));
-    $atendente->setComissao(filter_input(INPUT_POST, 'comissao', FILTER_VALIDATE_FLOAT));
+    $atendente->setNome($_POST['nome'] ?? null);
+    $atendente->setEndereco($_POST['endereco'] ?? null);
+    $atendente->setTelefone($_POST['telefone'] ?? null);
+    $atendente->setSalarioBase(isset($_POST['salarioBase']) ? (float) $_POST['salarioBase'] : null);
+    $atendente->setComissao(isset($_POST['comissao']) ? (float) $_POST['comissao'] : null);
 
-    $erros = $atendenteCont->salvar($atendente);
+
+    $atendente->getId() ? $erros = $atendenteCont->alterar($atendente) : $erros = $atendenteCont->inserir($atendente);
     if (empty($erros)) {
         header("Location: listarAtendentes.php");
         exit();
@@ -34,38 +35,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $id ? 'Alterar' : 'Criar' ?> Atendente - Pizzaria Vovô Alberto</title>
-    <link rel="stylesheet" href="../../css/styles.css">
-</head>
-<body>
-    <main>
+<?php include_once(__DIR__ . "/../include/header.php");?>
+        
         <h3><?= $id ? 'Alterar' : 'Criar Novo' ?> Atendente</h3>
 
         <form action="" method="post">
             <label for="nome">Nome:</label>
-            <input type="text" name="nome" id="nome" value="<?= htmlspecialchars($atendente->getNome() ?? '') ?>">
+            <input type="text" name="nome" id="nome" value="<?= $atendente->getNome() ?? '' ?>">
 
             <label for="endereco">Endereço:</label>
-            <input type="text" name="endereco" id="endereco" value="<?= htmlspecialchars($atendente->getEndereco() ?? '') ?>">
+            <input type="text" name="endereco" id="endereco" value="<?= $atendente->getEndereco() ?? '' ?>">
 
             <label for="telefone">Telefone:</label>
-            <input type="text" name="telefone" id="telefone" value="<?= htmlspecialchars($atendente->getTelefone() ?? '') ?>">
+            <input type="text" name="telefone" id="telefone" maxlength=15 onkeyup="handlePhone(event)" value="<?= $atendente->getTelefone() ?? '' ?>">
 
             <label for="salarioBase">Salário Base:</label>
-            <input type="number" name="salarioBase" id="salarioBase" step="0.01" value="<?= htmlspecialchars($atendente->getSalarioBase() ?? '') ?>">
+            <input type="number" name="salarioBase" id="salarioBase" value="<?= $atendente->getSalarioBase() ?? '' ?>">
 
             <label for="comissao">Comissão:</label>
-            <input type="number" name="comissao" id="comissao" step="0.01" value="<?= htmlspecialchars($atendente->getComissao() ?? '') ?>">
+            <input type="number" name="comissao" id="comissao" value="<?= $atendente->getComissao() ?? '' ?>">
 
             <input type="submit" value="Salvar">
         </form>
     </main>
 </body>
-</html>
+    <script>
+    const handlePhone = (event) => {
+        let input = event.target
+        input.value = phoneMask(input.value)
+        }
+
+        const phoneMask = (value) => {
+        if (!value) return ""
+        value = value.replace(/\D/g,'')
+        value = value.replace(/(\d{2})(\d)/,"($1) $2")
+        value = value.replace(/(\d)(\d{4})$/,"$1-$2")
+        return value
+        }
+    </script>
+
+
 
 <?php include_once(__DIR__ . "/../include/footer.php"); ?>
