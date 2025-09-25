@@ -54,15 +54,15 @@ CREATE TABLE pedido_sabores (
 
 INSERT INTO atendente (nome, endereco, telefone, salarioBase, comissao)
 VALUES
-    ('Japa dzz7 100% focado', 'Correndo no gramadão', '4591096457', 1518.00, 0),
-    ('Gustavo Vieira Goularte', 'Condominio Três lagoas', '4591176904', 1518.00, 0),
-    ('Gabriel Soldado Guilhen', 'Favela da batalha', '4598500488', 1518.00, 0);
+    ('Japa dzz7 100% focado', 'Correndo no gramadão', '(45) 99109-6457', 1518.00, 0),
+    ('Gustavo Vieira Goularte', 'Condominio Três lagoas', '(45) 91176-7904', 1518.00, 0),
+    ('Gabriel Soldado Guilhen', 'Favela da batalha', '(45) 98500-9488', 1518.00, 0);
 
 INSERT INTO entregador (nome, endereco, telefone, salarioBase, comissao, placaMoto, modeloMoto)
 VALUES
-    ('Enzo Michel Barbosa Suco', 'Rua Franca 670', '4591096457', 1518.00, 0, 'BRA0S17', 'Honda cg 125 fan'),
-    ('Dj Kauã', 'Fazendo tatuagem', '45999672452', 1518.00, 0, 'GQK4D47', 'Fazer 250'),
-    ('Senhor Paulo Emanoel Toblerone Feijão', 'Retifoz', '45938469068', 1518.00, 0, 'JWK5R09', 'Yamaha Mt-09');
+    ('Enzo Michel Barbosa Suco', 'Rua Franca 670', '(45) 99976-3457', 1518.00, 0, 'BRA0S17', 'Honda cg 125 fan'),
+    ('Dj Kauã', 'Fazendo tatuagem', '(45) 99967-2452', 1518.00, 0, 'GQK4D47', 'Fazer 250'),
+    ('Senhor Paulo Emanoel Toblerone Feijão', 'Retifoz', '(45) 93846-9068', 1518.00, 0, 'JWK5R09', 'Yamaha Mt-09');
 
 INSERT INTO sabores (nome)
 VALUES
